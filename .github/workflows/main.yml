@@ -23,7 +23,7 @@ jobs:
             cd /home/ubuntu/Ecom-website-bootstrap-javascaript
             
             # Pull latest changes from the repository and rebase local changes
-            git pull origin master --rebase
+            git pull origin main --rebase
             
             # Copy the updated files to the web server directory
             sudo cp -r * /var/www/html
