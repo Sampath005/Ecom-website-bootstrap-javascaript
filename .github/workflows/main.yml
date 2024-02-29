@@ -1,9 +1,9 @@
-name: UI Application Deployment
+name: Deploy UI Application
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -13,21 +13,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Configure SSH keys
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - name: Deploy frontend to EC2
+      - name: SSH into EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_NAME }}
           username: ${{ secrets.USER_NAME }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
+            # Navigate to the directory containing the UI application
             cd /home/ubuntu/frontend
-            git pull --rebase origin master
-            cp -r * /var/www/html
+            
+            # Pull latest changes from the repository and rebase local changes
+            git pull origin master --rebase
+            
+            # Copy the updated files to the web server directory
+            sudo cp -r * /var/www/html
+            
+            # Stop the nginx web server to apply changes
             sudo systemctl stop nginx.service
+            
+            # Reload the systemd daemon to ensure nginx picks up changes
             sudo systemctl daemon-reload
+            
+            # Restart the nginx service to apply changes
             sudo systemctl restart nginx.service
+            
+            # Check the status of the nginx service to verify successful restart
             sudo systemctl status nginx.service
