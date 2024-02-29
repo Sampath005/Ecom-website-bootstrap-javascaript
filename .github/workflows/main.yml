@@ -1,0 +1,33 @@
+name: UI Application Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure SSH keys
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Deploy frontend to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_NAME }}
+          username: ${{ secrets.USER_NAME }}
+          script: |
+            cd /home/ubuntu/frontend
+            git pull --rebase origin master
+            cp -r * /var/www/html
+            sudo systemctl stop nginx.service
+            sudo systemctl daemon-reload
+            sudo systemctl restart nginx.service
+            sudo systemctl status nginx.service
