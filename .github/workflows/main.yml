@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             # Navigate to the directory containing the UI application
-            cd /home/ubuntu/frontend
+            cd /home/ubuntu/Ecom-website-bootstrap-javascaript
             
             # Pull latest changes from the repository and rebase local changes
             git pull origin master --rebase
