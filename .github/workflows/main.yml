@@ -3,7 +3,7 @@ name: UI Application Deployment
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
